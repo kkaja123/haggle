@@ -87,38 +87,38 @@ public:
 	void PrintWithLevel(Level msgLevel, const char* msg, std::source_location callingFunc = std::source_location::current());
 
 	/** @brief Changes how file paths are represented when they are logged
-     * when this is built in a Debug configuration.
-     *
-     * @param isFullPath    True: The full path is printed.
-     *                      False: Only the name of the file and its extension
-     *                        are printed.
-     */
+	 * when this is built in a Debug configuration.
+	 *
+	 * @param isFullPath    True: The full path is printed.
+	 *                      False: Only the name of the file and its extension
+	 *                        are printed.
+	 */
 	void SetDebugFilenamePathStyle(bool isFullPath)
 	{
 		debugFilePathIsPrintedInFull = isFullPath;
 	}
 
 	/** @brief Sets the minimum severity level of log messages that can be logged.
-     *
-     * @details The severity levels are sorted like this:
-     * _Silent > Error > Warning > Info > Debug
-     *
-     * @param filterLevel   The minimum level of log messages that will be logged.
-     *                          If messages with a lower severity are sent to the
-     *                          logger, they will be ignored.
-     */
+	 *
+	 * @details The severity levels are sorted like this:
+	 * _Silent > Error > Warning > Info > Debug
+	 *
+	 * @param filterLevel   The minimum level of log messages that will be logged.
+	 *                          If messages with a lower severity are sent to the
+	 *                          logger, they will be ignored.
+	 */
 	void SetLogFilterLevel(Level filterLevel)
 	{
 		levelFilter = filterLevel;
 	}
 
 private:
-    /// Log messages are additional written to this file stream.
+	/// Log messages are additional written to this file stream.
 	std::fstream file;
 
-    /// When this is built in Debug mode, the calling context file path will
-    /// be printed in full (true) or it will be abbreviated to just the file
-    /// name and extension (false).
+	/// When this is built in Debug mode, the calling context file path will
+	/// be printed in full (true) or it will be abbreviated to just the file
+	/// name and extension (false).
 	bool debugFilePathIsPrintedInFull;
 
 	Level levelFilter;
