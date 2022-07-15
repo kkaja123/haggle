@@ -1,5 +1,8 @@
 #include "logger/logger.hpp"
 #include <sstream>
+#include <exception>
+
+Logger* mainLoggerPtr = nullptr;
 
 std::initializer_list<std::string> ext_whitelist
 {
@@ -12,20 +15,38 @@ bool ends_with(std::string const& value, std::string const& ending)
 	if (ending.size() > value.size()) return false;
 	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
+void initLogger()
+{
+	if (mainLoggerPtr == nullptr)
+	{
+		mainLoggerPtr = new Logger();
+	}
+	else
+	{
+		delete mainLoggerPtr;
+		mainLoggerPtr = new Logger();
+	}
+}
 
 void init()
 {
-	logger::init("Haggle Mod Loader");
+	initLogger();
+	if (mainLoggerPtr == nullptr)
+	{
+		throw std::runtime_error("An error was encountered while trying to create the main logger.");
+	}
+
+	mainLoggerPtr->init("Haggle Mod Loader");
 	std::printf("----- Haggle Mod Loader -----\n");
 
 	std::stringstream dirDescription;
 	dirDescription << "In directory \"" << std::filesystem::absolute(std::filesystem::path("./")).string() << "\"";
-	PRINT_INFO("%s", dirDescription.str().c_str());
+	LOG_INFO(mainLoggerPtr, "%s", dirDescription.str().c_str());
 
 	if (!std::filesystem::exists("./mods/"))
 	{
-		PRINT_ERROR("No mods folder found!");
-		PRINT_INFO("Make a mods folder in your Peggle directory");
+		LOG_ERROR(mainLoggerPtr, "No mods folder found!");
+		LOG_INFO(mainLoggerPtr, "Make a mods folder in your Peggle directory");
 	}
 	else
 	{
@@ -41,7 +62,7 @@ void init()
 			}
 		}
 
-		PRINT_INFO("Loading Mods...");
+		LOG_INFO(mainLoggerPtr, "Loading Mods...");
 		static int count = 0;
 		for (const auto& bin : files)
 		{
@@ -53,11 +74,11 @@ void init()
 
 					if (GetLastError() != 0)
 					{
-						PRINT_ERROR("%s errored! (%i)", bin.c_str(), GetLastError());
+						LOG_ERROR(mainLoggerPtr, "%s errored! (%i)", bin.c_str(), GetLastError());
 					}
 					else
 					{
-						PRINT_INFO("%s loaded!", bin.c_str());
+						LOG_INFO(mainLoggerPtr, "%s loaded!", bin.c_str());
 					}
 
 					++count;
@@ -69,18 +90,18 @@ void init()
 
 		if (count == 1)
 		{
-			PRINT_INFO("1 mod loaded");
+			LOG_INFO(mainLoggerPtr, "1 mod loaded");
 		}
 		else if (count > 1)
 		{
-			PRINT_INFO("%i mods loaded", count);
+			LOG_INFO(mainLoggerPtr, "%i mods loaded", count);
 		}
 		else if (count <= 0)
 		{
-			PRINT_WARNING("No mods loaded");
+			LOG_WARNING(mainLoggerPtr, "No mods loaded");
 		}
 
-		PRINT_INFO("Ready!");
+		LOG_INFO(mainLoggerPtr, "Ready!");
 	}
 }
 

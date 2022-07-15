@@ -38,7 +38,7 @@ workspace "Haggle"
 	}
 
 	--x86
-	filter "platforms:x86"	
+	filter "platforms:x86"
 		architecture "x86"
 	--end
 
@@ -57,6 +57,7 @@ workspace "Haggle"
 	project "Haggle"
 		targetname "haggle-sdk"
 		language "c++"
+    cppdialect "C++20"
 		kind "sharedlib"
 		warnings "off"
 
@@ -85,6 +86,7 @@ if _OPTIONS["example-mod"] then
 	project "Example-Mod"
 		targetname "example-mod"
 		language "c++"
+    cppdialect "C++20"
 		kind "sharedlib"
 		warnings "off"
 

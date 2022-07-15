@@ -33,7 +33,7 @@ workspace "Mod Loader"
 	}
 
 	--x86
-	filter "platforms:x86"	
+	filter "platforms:x86"
 		architecture "x86"
 	--end
 
@@ -52,7 +52,7 @@ workspace "Mod Loader"
 project "Mod Loader"
 		targetname "dsound"
 		language "c++"
-		cppdialect "c++17"
+		cppdialect "c++20"
 		kind "sharedlib"
 		warnings "off"
 
