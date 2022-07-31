@@ -50,7 +50,7 @@ workspace "Mod Loader"
 		symbols "on"
 
 project "Mod Loader"
-		targetname "dsound"
+		targetname "ddraw"
 		language "c++"
 		cppdialect "c++20"
 		kind "sharedlib"

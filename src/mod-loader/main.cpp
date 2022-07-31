@@ -79,9 +79,8 @@ void init()
 					else
 					{
 						LOG_INFO(mainLoggerPtr, "%s loaded!", bin.c_str());
+						++count;
 					}
-
-					++count;
 				}
 			}
 		}

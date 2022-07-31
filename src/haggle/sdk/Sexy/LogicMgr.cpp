@@ -36,8 +36,35 @@ void __fastcall Sexy__LogicMgr__BeginShot(Sexy::LogicMgr* this_, char* edx, bool
 static char* (__fastcall* Sexy__LogicMgr__BeginTurn2_)(Sexy::LogicMgr*, char*);
 char* __fastcall Sexy__LogicMgr__BeginTurn2(Sexy::LogicMgr* this_, char* edx)
 {
-	callbacks::run_basic_callbacks(callbacks::type::beginturn2);
-	return Sexy__LogicMgr__BeginTurn2_(this_, edx);
+	callbacks::run_basic_callbacks(callbacks::type::begin_turn_2);
+	auto retn = Sexy__LogicMgr__BeginTurn2_(this_, edx);
+	callbacks::run_after_begin_turn_2_callbacks(this_);
+	return retn;
+}
+
+static void (__fastcall* Sexy__LogicMgr__FinishInitLevelText_)(Sexy::LogicMgr*, char*);
+void __fastcall Sexy__LogicMgr__FinishInitLevelText(Sexy::LogicMgr* this_, char* edx)
+{
+	callbacks::run_basic_callbacks(callbacks::type::finish_init_level);
+	Sexy__LogicMgr__FinishInitLevelText_(this_, edx);
+}
+
+static void(__fastcall* Sexy__LogicMgr__DoLevelDone_)(Sexy::LogicMgr*, char*);
+void __fastcall Sexy__LogicMgr__DoLevelDone(Sexy::LogicMgr* this_, char* edx)
+{
+	callbacks::run_basic_callbacks(callbacks::type::do_level_done);
+	Sexy__LogicMgr__DoLevelDone_(this_, edx);
+}
+
+static bool(__fastcall* Sexy__LogicMgr__BeatLevel_)(Sexy::LogicMgr*, char*);
+bool __fastcall Sexy__LogicMgr__BeatLevel(Sexy::LogicMgr* this_, char* edx)
+{
+	auto retn = Sexy__LogicMgr__BeatLevel_(this_, edx);
+
+	if (retn) callbacks::run_basic_callbacks(callbacks::type::after_beat_level_true);
+	else if (!retn) callbacks::run_basic_callbacks(callbacks::type::after_beat_level_false);
+
+	return retn;
 }
 
 //Adds control over the otherwise broken powerups
@@ -91,6 +118,9 @@ void Sexy::LogicMgr::setup()
 	MH_CreateHook((void*)0x0046F480, Sexy__LogicMgr__PegHit, (void**)&Sexy__LogicMgr__PegHit_);
 	MH_CreateHook((void*)0x0046AC70, Sexy__LogicMgr__BeginShot, (void**)&Sexy__LogicMgr__BeginShot_);
 	MH_CreateHook((void*)0x0044B5B0, Sexy__LogicMgr__BeginTurn2, (void**)&Sexy__LogicMgr__BeginTurn2_);
+	MH_CreateHook((void*)0x0046C220, Sexy__LogicMgr__FinishInitLevelText, (void**)&Sexy__LogicMgr__FinishInitLevelText_);
+	MH_CreateHook((void*)0x0046A9C0, Sexy__LogicMgr__DoLevelDone, (void**)&Sexy__LogicMgr__DoLevelDone_);
+	MH_CreateHook((void*)0x0043D530, Sexy__LogicMgr__BeatLevel, (void**)&Sexy__LogicMgr__BeatLevel_);
 
 	jump(0x0046F0DF, unused_powerups_hook);
 	jump(0x0045DE5C, next_board_balls_hook);
@@ -210,7 +240,7 @@ void Sexy::LogicMgr::PegHit(Sexy::Ball* ball, Sexy::PhysObj* phys_obj, bool a4)
 		(logic_mgr, ball, phys_obj, a4);
 }
 
-Sexy::FloatingText* Sexy::LogicMgr::AddStandardText(std::string string, float x_pos, float y_pos, int type)
+Sexy::FloatingText* Sexy::LogicMgr::AddStandardText(std::string& string, float x_pos, float y_pos, int type)
 {
 	if (!check_exists()) return 0;
 	return reinterpret_cast<Sexy::FloatingText * (__thiscall*)(LogicMgr*, std::string&, float, float, int)>(0x00469EB0)
@@ -322,4 +352,10 @@ float Sexy::LogicMgr::RadiansToDegrees(float angleRadians)
 	constexpr float RAD_TO_DEG_SCALAR = 180.0f / PI;
 
 	return std::fmodf(angleRadians * RAD_TO_DEG_SCALAR + DOWN_ROTATION_DEGREES, 360.0f) - 180.0f;
+}
+
+void Sexy::LogicMgr::CalcCornerDisplay()
+{
+	if (!check_exists()) return;
+	reinterpret_cast<void(__thiscall*)(LogicMgr*)>(0x00448370)(logic_mgr);
 }

@@ -1,6 +1,7 @@
 #include "proxy.hpp"
 
-EXPORT(DirectSoundCreate)
+EXPORT(DirectDrawCreate)
+EXPORT(DirectDrawCreateEx)
 
 std::unordered_map<const char*, HMODULE> proxy::libs;
 

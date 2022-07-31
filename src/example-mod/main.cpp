@@ -18,7 +18,7 @@ void init()
 void Example_Callbacks(void)
 {
 	// Example generic callback
-	callbacks::on(callbacks::type::beginturn2, []()
+	callbacks::on(callbacks::type::begin_turn_2, []()
 	{
 		Sexy::LogicMgr::AddStandardText("Begin Turn!", 330.0f, 150.0f, 48);
 	});
@@ -35,6 +35,19 @@ void Example_Callbacks(void)
 		double pos_x = ((double(__thiscall*)(Sexy::PhysObj*)) * (std::uint32_t*)(*(std::uint32_t*)phys_obj_->data + 120))(phys_obj);
 		double pos_y = ((double(__thiscall*)(Sexy::PhysObj*)) * (std::uint32_t*)(*(std::uint32_t*)phys_obj_->data + 124))(phys_obj);
 		Sexy::LogicMgr::AddStandardText("Peg Hit!", pos_x, pos_y, 50);
+	});
+
+	callbacks::on_load_level([](auto board, auto level_name)
+	{
+		std::printf("Loading Level: %s\n", level_name.c_str());
+	});
+
+	callbacks::do_play([](auto level_screen, auto a3)
+	{
+		// this is pretty disgusting, but this is what we have until we map out the struct
+		uint32_t stage = *(uint32_t*)(&level_screen + 651) + 1;  // offset to stage index
+		uint32_t level = *(uint32_t*)(&level_screen + 652) + 1;  // offset to level index
+		std::printf("Loading Level: %d-%d\n", stage, level);
 	});
 }
 
